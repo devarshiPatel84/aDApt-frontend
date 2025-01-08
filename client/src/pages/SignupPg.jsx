@@ -132,7 +132,7 @@ const SignupPg = () => {
                                             <Key className='size-5 text-base-content/40' />
                                         </div>
                                         <input
-                                            type={showPass ? "text" : "password"}
+                                            type={showKey ? "text" : "password"}
                                             className={`input input-bordered w-full pl-10`}
                                             placeholder='******'
                                             value={formData.admincode}
