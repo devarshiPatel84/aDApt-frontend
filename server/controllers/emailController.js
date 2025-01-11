@@ -33,7 +33,11 @@ const removeCategory = async (req, res) => {
 
 const getEmails = async (req, res) => {
   try {
-    const emails = await Email.find(req.params.categoryId);
+    const {categoryId} = req.params;
+    const emails = await Email.find({categoryId});
+    if(!emails || emails.length === 0) {
+      return res.status(404).json({ error: "Emails not found." });
+    }
     res.status(200).json(emails);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch emails." });
@@ -42,10 +46,10 @@ const getEmails = async (req, res) => {
 
 const addEmail = async (req, res) => {
   try {
-    const { categoryId } = req.params.categoryId;
-    const { emailAddress, description } = req.body;
-    const email = await Email.create({ categoryId, emailAddress, description });
-    res.status(200).json(email);
+    const categoryId = req.params.categoryId;
+    const { email, description } = req.body;
+    const newemail = await Email.create({ categoryId, email, description });
+    res.status(200).json(newemail);
   } catch (error) {
     res.status(500).json({ error: "Failed to add email." });
   }
@@ -53,9 +57,10 @@ const addEmail = async (req, res) => {
 
 const removeEmail = async (req, res) => {
   try {
-    const email = await Email.findByIdAndDelete(req.params.emailId);
+    const {categoryId, emailId} = req.params;
+    const email = await Email.findOneAndDelete({_id: emailId, categoryId});
     if (!email) {
-      return res.status(404).json({ error: "Email not found." });
+      return res.status(404).json({ error: "Email not found or does not belong to this category." });
     }
     res.status(200).json({ message: "Email removed successfully." });
   } catch (error) {
